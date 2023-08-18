@@ -17,8 +17,6 @@ const AxiosAwait = () => {
   const urlLibros = "http://45.236.130.191/api-prueba/biblioteca.php?action=libros";
   const urlSocios = "http://45.236.130.191/api-prueba/biblioteca.php?action=socios";
 
-  
-
   useEffect(() => {
     datosApi(urlLibros, setLibros);
     datosApi(urlSocios, setSocios);
@@ -39,7 +37,6 @@ const AxiosAwait = () => {
   useEffect(() => {
     localStorage.setItem("devoluciones", JSON.stringify(devoluciones));
   }, [devoluciones]);
-
 
   const datosApi = async (url, setData) => {
     const response = await axios.get(url);
@@ -106,15 +103,15 @@ const AxiosAwait = () => {
     setDevoluciones([...devoluciones, { titulo: libroDevolucion.titulo, fechaDevolucion: fechaActual }]);
   };
 
-  const prestamoAtrasado = (fechaDevolucion) => {
+  const prestamoAtrasado = (fechaDevolucion, fechaPrestamo) => {
     const fechaDevolucionObj = new Date(fechaDevolucion);
-    const hoy = new Date();
-    const diffTime = fechaDevolucionObj.getTime() - hoy.getTime();
+    const fechaDev = new Date(fechaPrestamo);
+    const diffTime = fechaDevolucionObj.getTime() - fechaDev.getTime();
+    
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays < -2;
+    console.log(diffDays);
+    return diffDays > 2;
   };
-
-
   
   const Tituloxd = {
     fontFamily: 'Arial, sans-serif',
@@ -137,7 +134,7 @@ const AxiosAwait = () => {
     color: 'BlueViolet',
     textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)',
   };
-  
+
   const handleLimpiarDevoluciones = () => {
     setDevoluciones([]);
     setLimpiarDevoluciones(true);
@@ -206,10 +203,10 @@ const AxiosAwait = () => {
         <tbody>
           {prestamos.map((prestamo, index) => (
             <tr key={index}>
-              <td style={prestamoAtrasado(prestamo.fechaDevolucion) ? estiloAtrasado : {}}>{prestamo.socio}</td>
-              <td style={prestamoAtrasado(prestamo.fechaDevolucion) ? estiloAtrasado : {}}>{prestamo.titulo}</td>
-              <td style={prestamoAtrasado(prestamo.fechaDevolucion) ? estiloAtrasado : {}}>{prestamo.fechaPrestamo}</td>
-              <td style={prestamoAtrasado(prestamo.fechaDevolucion) ? estiloAtrasado : {}}>{prestamo.fechaDevolucion}</td>
+              <td style={prestamoAtrasado(prestamo.fechaDevolucion, prestamo.fechaPrestamo) ? estiloAtrasado : {}}>{prestamo.socio}</td>
+              <td style={prestamoAtrasado(prestamo.fechaDevolucion, prestamo.fechaPrestamo) ? estiloAtrasado : {}}>{prestamo.titulo}</td>
+              <td style={prestamoAtrasado(prestamo.fechaDevolucion, prestamo.fechaPrestamo) ? estiloAtrasado : {}}>{prestamo.fechaPrestamo}</td>
+              <td style={prestamoAtrasado(prestamo.fechaDevolucion, prestamo.fechaPrestamo) ? estiloAtrasado : {}}>{prestamo.fechaDevolucion}</td>
               <td style={{textAlign: "center"}}><button onClick={() => handleDevolverLibro(prestamo)} style={{ marginBottom: "10px", backgroundColor: "green", color: "white" }}>
                 Devolver
                 </button>
